@@ -1,0 +1,84 @@
+#!/bin/env bash
+
+VERSION=0.1
+
+CONF_DIR=~/.gitplugins
+CONF_FILE="${CONF_DIR}"/gitpluginconf
+
+display_usage() {
+  cat - <<- EOS
+	initialization: git-plugin init
+	usage: git plugin <command> [<args>]
+
+	commands:
+	   init
+	       Initialize plugin settings
+
+	   add <alias> '<script>'
+	       Add new plugin
+
+	   rm <alias>
+	       Remove a plugin
+
+	   ls
+	       Display installed plugins
+
+	   log
+	       Display plugin installation history
+
+	   version
+	       Display version info
+
+	   help
+	       Display this message
+
+	EOS
+}
+
+init_plugin() {
+  mkdir "${CONF_DIR}"
+  cat - <<- EOS > "${CONF_FILE}"
+	[alias]
+	  plugin = "!$0"
+	EOS
+  git config --global include.path "${CONF_FILE}"
+  cd "${CONF_DIR}"
+  git init -q -b main
+  git add "${CONF_FILE}"
+  git commit -qm "[init]"
+}
+
+add_alias() {
+  git config -f "${CONF_FILE}" alias."$1" "$2"
+  cd "${CONF_DIR}"
+  git add "${CONF_FILE}"
+  git commit -qm "[add] $1 $2"
+}
+
+rm_alias() {
+  git config -f "${CONF_FILE}" --unset alias."$1"
+  cd "${CONF_DIR}"
+  git add "${CONF_FILE}"
+  git commit -qm "[rm] $1"
+}
+
+ls_alias() {
+  git config -f "${CONF_FILE}" --get-regexp '^alias.*'
+}
+
+display_log() {
+  cd "${CONF_DIR}"
+  git log --oneline
+}
+
+case "$1" in
+  init) init_plugin ;;
+  add) add_alias "$2" "$3" ;;
+  rm) rm_alias "$2" ;;
+  ls) ls_alias ;;
+  log) display_log ;;
+  version) echo "${VERSION}" ;;
+  help) display_usage ;;
+  *) display_usage ;;
+esac
+
