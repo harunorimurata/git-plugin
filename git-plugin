@@ -5,35 +5,32 @@ VERSION=0.1
 CONF_DIR=~/.gitplugins
 CONF_FILE="${CONF_DIR}"/gitpluginconf
 
-display_usage() {
-  cat - <<- EOS
-	initialization: git-plugin init
-	usage: git plugin <command> [<args>]
+USAGE="\
+initialization: git-plugin init
+usage: git plugin <command> [<args>]
 
-	commands:
-	   init
-	       Initialize plugin settings
+commands:
+   init
+       Initialize plugin settings
 
-	   add <alias> '<script>'
-	       Add new plugin
+   add <alias> '<script>'
+       Add new plugin
 
-	   rm <alias>
-	       Remove a plugin
+   rm <alias>
+       Remove a plugin
 
-	   ls
-	       Display installed plugins
+   ls
+       Display installed plugins
 
-	   log
-	       Display plugin installation history
+   log
+       Display plugin installation history
 
-	   version
-	       Display version info
+   version
+       Display version info
 
-	   help
-	       Display this message
-
-	EOS
-}
+   help
+       Display this message
+"
 
 init_plugin() {
   mkdir "${CONF_DIR}"
@@ -78,7 +75,7 @@ case "$1" in
   ls) ls_alias ;;
   log) display_log ;;
   version) echo "${VERSION}" ;;
-  help) display_usage ;;
-  *) display_usage ;;
+  help) echo "${USAGE}" ;;
+  *) echo "${USAGE}" ;;
 esac
 
